@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -253,5 +253,133 @@ $(document).ready(function () {
         });
 });
 </script>
+</body>
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insight Expense Details</title>
+
+    <!-- Bootstrap for Desktop -->
+    <link id="bootstrapCSS" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- jQuery and DataTables -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    
+    <!-- Default Styles -->
+    <style>
+        body { padding: 20px; }
+        .filter-container { margin-bottom: 20px; }
+        .mobile-view { display: none; } /* Hide mobile view by default */
+    </style>
+
+    <script>
+        function detectDevice() {
+            const isMobile = /iPhone|iPad|Android|BlackBerry|Opera Mini|IEMobile/i.test(navigator.userAgent);
+
+            if (isMobile) {
+                // Load jQuery Mobile for mobile experience
+                $('head').append('<link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">');
+                $.getScript("https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js");
+                
+                // Modify UI for mobile
+                $(".desktop-view").hide();
+                $(".mobile-view").show();
+                $("body").addClass("mobile-friendly");
+            } else {
+                // Load Bootstrap for desktop
+                $('head').append('<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>');
+            }
+        }
+
+        $(document).ready(function () {
+            detectDevice(); // Run device detection
+        });
+    </script>
+</head>
+<body>
+
+<!-- Desktop Version -->
+<div class="container desktop-view">
+    <h2 class="text-center mb-4">Insight Expense Details (Desktop)</h2>
+    
+    <div class="table-responsive">
+        <table id="dataTable" class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Project</th>
+                    <th>Paid By</th>
+                    <th>Date</th>
+                    <th>Item Description</th>
+                    <th>Element</th>
+                    <th>Work Type</th>
+                    <th>Total Amount</th>
+                    <th>Paid Amount</th>
+                    <th>Payables</th>
+                    <th>Supplier</th>
+                    <th>Type</th>
+                    <th>Month</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Mobile Version -->
+<div class="mobile-view">
+    <h2 class="text-center mb-4">Insight Expenses (Mobile)</h2>
+
+    <ul data-role="listview" id="mobileList" class="list-group"></ul>
+</div>
+
+<script>
+$(document).ready(function () {
+    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTb3NBRMu37zvWtTBeiDzHD1h15mhU2UmH8kKYofKbfPQ3QIZRKhYjiZWH41xQfURepbIE7W2pF0Nt-/pub?gid=980089094&single=true&output=csv";
+
+    fetch(sheetURL)
+        .then(response => response.text())
+        .then(data => {
+            let rows = data.split("\n").map(row => row.split(",")).slice(1);
+
+            if ($("body").hasClass("mobile-friendly")) {
+                // ✅ Mobile: Display Data as List
+                rows.forEach(row => {
+                    $("#mobileList").append(`
+                        <li class="list-group-item">
+                            <h5>${row[0]}</h5>
+                            <p><strong>Paid By:</strong> ${row[1]}</p>
+                            <p><strong>Date:</strong> ${row[2]}</p>
+                            <p><strong>Amount:</strong> ₹${row[6]}</p>
+                        </li>
+                    `);
+                });
+                $("#mobileList").listview("refresh");
+            } else {
+                // ✅ Desktop: Display DataTable
+                $('#dataTable').DataTable({
+                    data: rows,
+                    columns: [
+                        { title: "Project" }, { title: "Paid By" }, { title: "Date" },
+                        { title: "Item Description" }, { title: "Element" }, { title: "Work Type" },
+                        { title: "Total Amount" }, { title: "Paid Amount" },
+                        { title: "Payables" }, { title: "Supplier" }, { title: "Type" }, { title: "Month" }
+                    ],
+                    paging: true,
+                    searching: true,
+                    ordering: true
+                });
+            }
+        })
+        .catch(error => console.error("Error fetching data:", error));
+});
+</script>
+
 </body>
 </html>
