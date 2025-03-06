@@ -80,7 +80,7 @@
     <div class="loader"></div>
 </div>
 
-<div class="container">
+<div class="">
     <h2 class="text-center mb-4">Insight Expense Details</h2>
 
     <!-- Filter Section -->
@@ -165,7 +165,7 @@ $(document).ready(function () {
 
             // ✅ Remove rows where both Project (col 0) & Date (col 2) are empty
             rows = rows.filter(row => row[0]?.trim() !== "" && row[2]?.trim() !== "");
-                console.log(rows)
+                console.log(rows[8])
             let table = $('#dataTable').DataTable({
                 data: rows,
                 columns: [
@@ -177,7 +177,27 @@ $(document).ready(function () {
                 paging: true,
                 searching: true,
                 ordering: true,
-                order:[[2,'asc']],
+                order: [[2, 'asc']],  // ✅ Sort by Date (index 2) in ascending order
+    columnDefs: [
+        {
+            targets: 2, // Target the Date column
+            render: function (data) {
+                let parts = data.split("-"); 
+                if (parts.length >= 3) {
+                    let day = parts[0];
+                    let month = parts[1];
+                    let year = parts[2].split("-")[0]; // Remove day name
+
+                    let dateObj = new Date(`${month} ${day}, 20${year}`);
+                    
+                    // ✅ Return human-readable format for display
+                    return dateObj.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+                }
+                return data;
+            },
+            type: "date"
+        }
+    ],
                 footerCallback: function (row, data, start, end, display) {
                     let api = this.api();
 
