@@ -165,7 +165,7 @@ $(document).ready(function () {
 
             // ✅ Remove rows where both Project (col 0) & Date (col 2) are empty
             rows = rows.filter(row => row[0]?.trim() !== "" && row[2]?.trim() !== "");
-
+                console.log(rows)
             let table = $('#dataTable').DataTable({
                 data: rows,
                 columns: [
