@@ -166,7 +166,7 @@ $(document).ready(function () {
             // ✅ Remove rows where both Project (col 0) & Date (col 2) are empty
             rows = rows.filter(row => row[0]?.trim() !== "" && row[2]?.trim() !== "");
              rows = rows.map(row => row.map(cell => cell.trim().replace(/[\r\n]+/g, "")));
-                console.log(rows[8])
+                // console.log(rows[8])
             let table = $('#dataTable').DataTable({
                 data: rows,
                 columns: [
@@ -176,6 +176,8 @@ $(document).ready(function () {
                     { title: "Payables" }, { title: "Supplier" }, { title: "Type" }, { title: "Month" }
                 ],
                 paging: true,
+                pageLength: 100,
+                lengthMenu: [10, 25, 50, 100],
                 searching: true,
                 ordering: true,
                 order: [[2, 'desc']],  // ✅ Sort by Date (index 2) in ascending order
